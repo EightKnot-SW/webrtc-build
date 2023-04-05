@@ -245,12 +245,14 @@ PATCHES = {
         '4k.patch',
         'add_license_dav1d.patch',
         'ssl_verify_callback_with_native_handle.patch',
+        'zlib_neon_gcc.patch',
     ],
     'ubuntu-20.04_armv8': [
         'add_dep_zlib.patch',
         '4k.patch',
         'add_license_dav1d.patch',
         'ssl_verify_callback_with_native_handle.patch',
+        'zlib_neon_gcc.patch',
     ],
     'ubuntu-20.04_x86_64': [
         '4k.patch',
@@ -376,6 +378,8 @@ def init_rootfs(sysroot: str, config: MultistrapConfig, force=False):
     if os.path.exists(sysroot):
         return
 
+    shutil.copytree('/etc/apt/trusted.gpg.d', f'{sysroot}/etc/apt/trusted.gpg.d')
+
     cmd(['multistrap', '--no-auth', '-a', config.arch, '-d', sysroot, '-f', os.path.join(*config.config_file)])
 
     lines = cmdcap(['find', f'{sysroot}/usr/lib/{config.triplet}', '-lname', '/*', '-printf', '%p %l\n']).splitlines()
@@ -422,8 +426,6 @@ WEBRTC_BUILD_TARGETS = {
 
 def get_build_targets(target):
     ts = [':default']
-    if target not in ('windows_x86_64', 'windows_arm64', 'ios', 'macos_arm64'):
-        ts += ['buildtools/third_party/libc++']
     ts += WEBRTC_BUILD_TARGETS.get(target, [])
     return ts
 
@@ -679,6 +681,10 @@ def build_webrtc(
                 f'target_cpu="{"arm64" if target in arm64_set else "arm"}"',
                 f'target_sysroot="{sysroot}"',
                 'rtc_use_pipewire=false',
+                'use_custom_libcxx=false',
+                'treat_warnings_as_errors=false',
+                'is_clang=false',
+                'arm_control_flow_integrity="none"',  # Prevent appearing 'paciasp', 'autiasp' instruction
             ]
             if target == 'raspberry-pi-os_armv6':
                 gn_args += [
@@ -694,6 +700,9 @@ def build_webrtc(
             gn_args += [
                 'target_os="linux"',
                 'rtc_use_pipewire=false',
+                'use_custom_libcxx=false',
+                'treat_warnings_as_errors=false',
+                'is_clang=false',
             ]
         else:
             raise Exception(f'Target {target} is not supported')

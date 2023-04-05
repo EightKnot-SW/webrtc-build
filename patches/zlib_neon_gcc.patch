@@ -1,0 +1,23 @@
+diff --git a/third_party/zlib/BUILD.gn b/third_party/zlib/BUILD.gn
+--- a/third_party/zlib/BUILD.gn
++++ b/third_party/zlib/BUILD.gn
+@@ -144,7 +144,7 @@
+       if (!is_win && !is_clang) {
+         assert(!use_thin_lto,
+                "ThinLTO fails mixing different module-level targets")
+-        cflags_c = [ "-march=armv8-a+crc" ]
++        cflags_c = [ "-march=armv8-a+aes+crc" ]
+       }
+ 
+       sources = [
+diff --git a/third_party/zlib/crc32_simd.c b/third_party/zlib/crc32_simd.c
+--- a/third_party/zlib/crc32_simd.c
++++ b/third_party/zlib/crc32_simd.c
+@@ -201,6 +201,7 @@
+ /* For GCC, we are setting CRC extensions at module level, so ThinLTO is not
+  * allowed. We can just include arm_acle.h.
+  */
++#include <arm_neon.h>
+ #include <arm_acle.h>
+ #define TARGET_ARMV8_WITH_CRC
+ #else  // !defined(__GNUC__) && !defined(_aarch64__)
