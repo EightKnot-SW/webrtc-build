@@ -167,6 +167,7 @@ PATCH_INFO = {
     'macos_use_xcode_clang.patch': (1, ['build']),
     'windows_fix_optional.patch': (1, ['third_party']),
     'use_exceptions.patch': (1, ['build']),
+    'ubuntu_armv8_outline.patch': (1, ['build']),
 }
 
 PATCHES = {
@@ -252,6 +253,7 @@ PATCHES = {
         'use_exceptions.patch',
         'add_license_dav1d.patch',
         'ssl_verify_callback_with_native_handle.patch',
+        'ubuntu_armv8_outline.patch',
     ],
     'ubuntu-20.04_armv8': [
         'add_deps.patch',
@@ -259,6 +261,7 @@ PATCHES = {
         'use_exceptions.patch',
         'add_license_dav1d.patch',
         'ssl_verify_callback_with_native_handle.patch',
+        'ubuntu_armv8_outline.patch',
     ],
     'ubuntu-20.04_x86_64': [
         'add_deps.patch',
